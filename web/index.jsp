@@ -11,10 +11,11 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link type="text/css" rel="stylesheet" href="css/screen.css">
         <title>Java Quetico Trip Planner</title>
     </head>
 
-    <body style="background-color:black; color:silver; font-family:fantasy;">
+    <body>
         <div style="text-align: center">
             <h1>Java Quetico Trip Planner</h1>
             <img src="images/body-bg.jpg" alt="Canoe Graphic" />

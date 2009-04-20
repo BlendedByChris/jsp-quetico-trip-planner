@@ -1,14 +1,15 @@
-/* 
-    Document   : screen
-    Created on : Apr 15, 2009, 8:30:39 PM
-    Author     : cleblanc
-    Description:
-        Purpose of the stylesheet follows.
-*/
+*
+{
+    margin: 0;
+    padding: 0;
+}
 
-/* 
-   TODO customize this sample style
-   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
-*/
+body
+{
+    color:black;
+    font-family:"Trebuchet MS";
+}
+
+
 
 

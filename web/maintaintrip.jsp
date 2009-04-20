@@ -3,13 +3,31 @@
     Created on : Apr 15, 2009, 7:03:02 PM
     Author     : cleblanc
 --%>
-<%@ page import="jsp_quetico_trip_planner.*" %>
-<% 
-%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page import="jsp_quetico_trip_planner.*" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.ListIterator" %>
+
+<%!
+    List errors;
+    ListIterator errorIterator;
+%>
+
+<%
+    ValidatorTrip validator = new ValidatorTrip(request);
+
+    if (request.getMethod().equals("POST")) {
+        validator.validate();
+        errors = validator.getErrors();
+        errorIterator = errors.listIterator();
+    }
+%>
+
+
 
 <html>
 
@@ -20,6 +38,13 @@
     </head>
     <body>
         <table>
+            <% if (validator.hasErrors()) { %>
+            <ul id="error-summary">
+                <% while(errorIterator.hasNext()) { %>
+                <li><%=errorIterator.next() %></li>
+                <% } %>
+            </ul>
+            <% } %>
             <form method="post" action="">
                 <tr>
                     <th><label for="txtGroupLeader">Group Leader Name:</label></th>
