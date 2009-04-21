@@ -18,12 +18,17 @@
 %>
 
 <%
-    ValidatorTrip validator = new ValidatorTrip(request);
+    TripValidator validator = new TripValidator(request);
+    TripCalculator calculator = new TripCalculator(request);
 
     if (request.getMethod().equals("POST")) {
         validator.validate();
         errors = validator.getErrors();
         errorIterator = errors.listIterator();
+
+        if (!validator.hasErrors()) {
+            calculator.calculate();
+        }
     }
 %>
 
@@ -48,27 +53,58 @@
             <form method="post" action="">
                 <tr>
                     <th><label for="txtGroupLeader">Group Leader Name:</label></th>
-                    <td><input type="text" id="txtGroupLeader" name="txtGroupLeader" value="" /></td>
+                    <td><input type="text" id="txtGroupLeader"
+                               name="txtGroupLeader"
+                               value="<%=validator.getParameter("txtGroupLeader") %>" /></td>
                 </tr>
                 <tr>
                     <th><label for="txtTotalGuests">Total Guests:</label></th>
-                    <td><input type="text" id="txtTotalGuests" name="txtTotalGuests" value="" /></td>
+                    <td><input type="text" id="txtTotalGuests" 
+                               name="txtTotalGuests"
+                               value="<%=validator.getParameter("txtTotalGuests") %>" /></td>
                 </tr>
                 <tr>
                     <th><label for="txtAdults">Adults:</label></th>
-                    <td><input type="text" id="txtAdults" name="txtAdults" value="" /></td>
+                    <td><input type="text" id="txtAdults" name="txtAdults" 
+                               value="<%=validator.getParameter("txtAdults") %>" /></td>
                 </tr>
                 <tr>
                     <th><label for="txtChildren">Children:</label></th>
-                    <td><input type="text" id="txtChildren" name="txtChildren" value="" /></td>
+                    <td><input type="text" id="txtChildren" name="txtChildren"
+                               value="" readonly="readonly" disabled="disabled" /></td>
                 </tr>
                 <tr>
-                    <th><label for="txtStartDate">Start Date:</label></th>
-                    <td><input type="text" id="txtStartDate" name="txtStartDate" value="" /></td>
+                    <th><label for="txtStartDateMonth">Start Date:</label></th>
+                    <td>
+                        <input type="text" id="txtStartDateMonth"
+                               name="txtStartDateMonth" 
+                               value="<%=validator.getParameter("txtStartDateMonth") %>"
+                               maxlength="2" size="2" /> /
+                        <input type="text" id="txtStartDateDay"
+                               name="txtStartDateDay" maxlength="2"
+                               value="<%=validator.getParameter("txtStartDateDay") %>"
+                               size="2" /> /
+                        <input type="text" id="txtStartDateYear"
+                               name="txtStartDateYear"
+                               maxlength="4" size="4"
+                               value="<%=validator.getParameter("txtStartDateYear") %>" />
+                    </td>
                 </tr>
                 <tr>
                     <th><label for="txtEndDate">End Date:</label></th>
-                    <td><input type="text" id="txtEndDate" name="txtEndDate" value="" /></td>
+                    <td>
+                        <input type="text" id="txtEndDateMonth"
+                               name="txtEndDateMonth" maxlength="2"
+                               size="2" 
+                               value="<%=validator.getParameter("txtEndDateMonth") %>" /> /
+                        <input type="text" id="txtEndDateDay"
+                               name="txtEndDateDay" maxlength="2"
+                               size="2"
+                               value="<%=validator.getParameter("txtEndDateDay") %>" /> /
+                        <input type="text" id="txtEndDateYear"
+                               name="txtEndDateYear"
+                               maxlength="4" size="4"
+                               value="<%=validator.getParameter("txtEndDateYear") %>" />                    </td>
                 </tr>
                 <tr>
                     <th>Additional Equipment:</th>
@@ -88,11 +124,15 @@
                 </tr>
                 <tr>
                     <th><label for="txtTripDuration">Trip Duration:</label></th>
-                    <td><input type="text" id="txtTripDuration" name="txtTripDuration" value="" readonly="readonly" disabled="disabled" /></td>
+                    <td><input type="text" id="txtTripDuration" name="txtTripDuration" 
+                               value="<%=calculator.getTripDuration() %>" 
+                               readonly="readonly" disabled="disabled" /></td>
                 </tr>
                 <tr>
-                    <th><label for="txtTotalCampingFees">Total Camping Fees:</label></th>
-                    <td><input type="text" id="txtTotalCampingFees" name="txtTotalCampingFees" value="" readonly="readonly" disabled="disabled" /></td>
+                    <th><label for="txtTripTotal">Total Camping Fees:</label></th>
+                    <td><input type="text" id="txtTripTotal" name="txtTripTotal"
+                               value="<%=calculator.getTripTotal() %>"
+                               readonly="readonly" disabled="disabled" /></td>
                 </tr>
 
                 <tr>
