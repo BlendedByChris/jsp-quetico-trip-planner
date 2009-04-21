@@ -20,7 +20,10 @@
             <h1>Java Quetico Trip Planner</h1>
             <img src="images/body-bg.jpg" alt="Canoe Graphic" />
             <h2>Select an Action:</h2>
-            <p><a href="maintaintrip.jsp">Enter Trip Information</a></p>
+            <ul>
+                <li><a href="trip.jsp">Enter Trip Information</a></li>
+                <li><a href="editCanoes.jsp">Select Canoes</a></li>
+            </ul>
         </div>
     </body>
 </html>

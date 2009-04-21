@@ -13,7 +13,7 @@ import java.sql.Statement;
  * This class abstracts the canoe database for use as an object
  * @author cleblanc
  */
-public class DbCanoe {
+public class CanoeDb {
     private static Connection connection = null;
 
     private static String url = "jdbc:odbc:timetrex";
@@ -25,7 +25,7 @@ public class DbCanoe {
      *
      * Sets the connection for use
      */
-    public DbCanoe() throws SQLException
+    public CanoeDb() throws SQLException
     {
         connection = getConnection();
     }

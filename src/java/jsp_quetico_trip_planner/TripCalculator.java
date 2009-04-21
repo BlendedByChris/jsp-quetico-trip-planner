@@ -20,8 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 public class TripCalculator {
     
     private HttpServletRequest request;
-    private long tripDuration = 0;
-    private long tripTotal = 0;
+    private long tripDuration = -1; // Hack for null
+    private long tripTotal = -1; // Hack for null
+    private int tripChildren = -1; // Hack for null
 
     // Per night fees
     private static long PERNIGHTFEEADULT = 20;
@@ -50,11 +51,13 @@ public class TripCalculator {
             // Get guest totals from form
             int txtAdults = Integer.parseInt(request.getParameter("txtAdults"));
             int txtTotalGuests = Integer.parseInt(request.getParameter("txtTotalGuests"));
-            int txtChildren = txtTotalGuests - txtAdults;
+            
+            // Calcuate total children on trip
+            tripChildren = txtTotalGuests - txtAdults;
 
             // Calculate trip total based on per night fee
             tripTotal = ((tripDuration-1) * (txtAdults * PERNIGHTFEEADULT)) +
-                        ((tripDuration-1) * (txtChildren * PERNIGHTFEECHILDREN));
+                        ((tripDuration-1) * (tripChildren * PERNIGHTFEECHILDREN));
         } catch (ParseException ex) {
             Logger.getLogger(TripCalculator.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -62,25 +65,36 @@ public class TripCalculator {
 
     public String getTripDuration()
     {
-        return tripDuration + " day(s).";
+        if (tripDuration >= 0)
+            return tripDuration + " day(s).";
+        else
+            return "";
     }
 
-    public String getTripTotal()
-    {
-        return NumberFormat.getCurrencyInstance()
-                    .format(tripTotal);
+    public String getTripTotal() {
+        if (tripTotal >= 0)
+            return NumberFormat.getCurrencyInstance()
+                        .format(tripTotal);
+        else
+            return "";
     }
 
-    private String getFormattedStartDate()
-    {
+    public String getTripChildren() {
+        if (tripChildren >= 0)
+            return tripChildren + "";
+        else
+            return "";
+            
+    }
+
+    public String getFormattedStartDate() {
         return
             request.getParameter("txtStartDateMonth") + "/" +
             request.getParameter("txtStartDateDay") + "/" +
             request.getParameter("txtStartDateYear");
     }
 
-    private String getFormattedEndDate()
-    {
+    public String getFormattedEndDate() {
         return
             request.getParameter("txtEndDateMonth") + "/" +
             request.getParameter("txtEndDateDay") + "/" +

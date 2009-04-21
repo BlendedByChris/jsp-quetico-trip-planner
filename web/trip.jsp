@@ -4,13 +4,13 @@
     Author     : cleblanc
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
-<%@ page import="jsp_quetico_trip_planner.*" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
-<%@ page import="java.util.ListIterator" %>
+<%@page import="jsp_quetico_trip_planner.*" %>
+<%@page import="java.util.List" %>
+<%@page import="java.util.ArrayList" %>
+<%@page import="java.util.ListIterator" %>
 
 <%!
     List errors;
@@ -28,6 +28,19 @@
 
         if (!validator.hasErrors()) {
             calculator.calculate();
+
+            // Store the session variables
+            session.setAttribute("groupLeader", validator.getParameter("txtGroupLeader"));
+            session.setAttribute("totalGuests", validator.getParameter("txtTotalGuests"));
+            session.setAttribute("adults", validator.getParameter("txtAdults"));
+            session.setAttribute("children", calculator.getTripChildren());
+            session.setAttribute("startDate", calculator.getFormattedStartDate());
+            session.setAttribute("endDate", calculator.getFormattedEndDate());
+            session.setAttribute("tow", validator.getParameter("chkTow"));
+            session.setAttribute("canoeRental", validator.getParameter("chkCanoeRental"));
+            session.setAttribute("payment", validator.getParameter("radioPayment"));
+            session.setAttribute("tripTotal", calculator.getTripTotal());
+            session.setAttribute("tripDuration", calculator.getTripDuration());
         }
     }
 %>
@@ -35,13 +48,14 @@
 
 
 <html>
-
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
         <link type="text/css" rel="stylesheet" href="css/screen.css">
     </head>
     <body>
+        <h1>New/Edit Trip</h1>
+        <h2><%=request.getParameter("flash") %></h2>
         <table>
             <% if (validator.hasErrors()) { %>
             <ul id="error-summary">
@@ -50,7 +64,7 @@
                 <% } %>
             </ul>
             <% } %>
-            <form method="post" action="">
+            <form method="post" action="trip.jsp">
                 <tr>
                     <th><label for="txtGroupLeader">Group Leader Name:</label></th>
                     <td><input type="text" id="txtGroupLeader"
@@ -71,7 +85,7 @@
                 <tr>
                     <th><label for="txtChildren">Children:</label></th>
                     <td><input type="text" id="txtChildren" name="txtChildren"
-                               value="" readonly="readonly" disabled="disabled" /></td>
+                               value="<%=calculator.getTripChildren() %>" readonly="readonly" disabled="disabled" /></td>
                 </tr>
                 <tr>
                     <th><label for="txtStartDateMonth">Start Date:</label></th>
@@ -141,6 +155,7 @@
                 </tr>
 
             </form>
-        </table>
+        </table
+        <a href="editCanoes.jsp">edit</a>
     </body>
 </html>
