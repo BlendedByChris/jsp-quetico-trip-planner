@@ -34,8 +34,8 @@
             session.setAttribute("totalGuests", validator.getParameter("txtTotalGuests"));
             session.setAttribute("adults", validator.getParameter("txtAdults"));
             session.setAttribute("children", calculator.getTripChildren());
-            session.setAttribute("startDate", calculator.getFormattedStartDate());
-            session.setAttribute("endDate", calculator.getFormattedEndDate());
+            session.setAttribute("startDate", calculator.getStartDate());
+            session.setAttribute("endDate", calculator.getEndDate());
             session.setAttribute("tow", validator.getParameter("chkTow"));
             session.setAttribute("canoeRental", validator.getParameter("chkCanoeRental"));
             session.setAttribute("payment", validator.getParameter("radioPayment"));
@@ -52,6 +52,22 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
         <link type="text/css" rel="stylesheet" href="css/screen.css">
+        <script language="JavaScript">
+            function validate(form) {
+                rpChecked = false;
+                for (var i=0; i < form.radioPayment.length; i++) {
+                    if (form.radioPayment[i].checked) {
+                        rpChecked = true;
+                    }
+                }
+
+                if (rpChecked == false) {
+                    alert("You must specify a payment type.");
+                    return false;
+                }
+                return true;
+            }
+        </script>
     </head>
     <body>
         <h1>New/Edit Trip</h1>
@@ -64,7 +80,7 @@
                 <% } %>
             </ul>
             <% } %>
-            <form method="post" action="trip.jsp">
+            <form method="post" action="trip.jsp" onsubmit="return validate(this);">
                 <tr>
                     <th><label for="txtGroupLeader">Group Leader Name:</label></th>
                     <td><input type="text" id="txtGroupLeader"
@@ -150,8 +166,8 @@
                 </tr>
 
                 <tr>
-                    <td align="right"><input type="submit" value="Calculate" />
-                    <td align="left"><input type="reset" value="Reset" />
+                    <td align="right" colspan="2"><input type="submit" 
+                        value="Calculate" />
                 </tr>
 
             </form>

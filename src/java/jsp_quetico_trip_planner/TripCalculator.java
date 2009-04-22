@@ -38,14 +38,9 @@ public class TripCalculator {
     }
 
     public void calculate()
-    {
-        try {
-            // Get start and end dates from form
-            Date startDate = sdf.parse(getFormattedStartDate());
-            Date endDate = sdf.parse(getFormattedEndDate());
-            
+    {           
             // Subtract dates and convert to days (add one for inclusive)
-            tripDuration = ((endDate.getTime() - startDate.getTime())
+            tripDuration = ((getEndDate().getTime() - getStartDate().getTime())
                     / (1000 * 60 * 60 * 24)) + 1;
 
             // Get guest totals from form
@@ -58,9 +53,6 @@ public class TripCalculator {
             // Calculate trip total based on per night fee
             tripTotal = ((tripDuration-1) * (txtAdults * PERNIGHTFEEADULT)) +
                         ((tripDuration-1) * (tripChildren * PERNIGHTFEECHILDREN));
-        } catch (ParseException ex) {
-            Logger.getLogger(TripCalculator.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     public String getTripDuration()
@@ -87,17 +79,27 @@ public class TripCalculator {
             
     }
 
-    public String getFormattedStartDate() {
-        return
-            request.getParameter("txtStartDateMonth") + "/" +
-            request.getParameter("txtStartDateDay") + "/" +
-            request.getParameter("txtStartDateYear");
+    public Date getStartDate() {
+        try {
+            return sdf.parse(
+                    request.getParameter("txtStartDateMonth") + "/" +
+                    request.getParameter("txtStartDateDay") + "/" +
+                    request.getParameter("txtStartDateYear"));
+        } catch (ParseException ex) {
+            Logger.getLogger(TripCalculator.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
-    public String getFormattedEndDate() {
-        return
-            request.getParameter("txtEndDateMonth") + "/" +
-            request.getParameter("txtEndDateDay") + "/" +
-            request.getParameter("txtEndDateYear");
+    public Date getEndDate() {
+        try {
+            return sdf.parse(
+                    request.getParameter("txtEndDateMonth") + "/" +
+                    request.getParameter("txtEndDateDay") + "/" +
+                    request.getParameter("txtEndDateYear"));
+        } catch (ParseException ex) {
+            Logger.getLogger(TripCalculator.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }        
     }
 }

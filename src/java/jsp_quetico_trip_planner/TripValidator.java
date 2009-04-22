@@ -1,6 +1,9 @@
 package jsp_quetico_trip_planner;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +16,9 @@ public class TripValidator {
 
     private HttpServletRequest request;
     private List<String> errors = new ArrayList<String>();
+
+    // Date parser
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
     /**
      * TripValidator
@@ -90,11 +96,10 @@ public class TripValidator {
         checkRadioPayment();
         
         // Check for computational errors
-        //checkTripEndDate();
+        checkTripStartDate();
+        checkTripEndDate();
         //checkPaymentSelected();
     }
-
-
 
     private void checkTxtGroupLeader() {
         if (request.getParameter("txtGroupLeader").length() < 5)
@@ -192,13 +197,50 @@ public class TripValidator {
             setError("Payment must be selected.");
     }
 
-    private void checkTripEndDate() {
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void checkTripStartDate() {
+       TripCalculator calculator = new TripCalculator(request);
+
+       Date startDate = calculator.getStartDate();
+       Date today = Calendar.getInstance().getTime();
+
+        // Get a calender instance to add to
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, +1);
+
+        // Get the result from the calender addition
+        Date todayPlusOneYear = cal.getTime();
+
+       if (startDate == null)
+           setError("Start date must be a valid date.");
+       else if (startDate.before(today))
+           setError("Start date must be after today.");
+       else if (startDate.after(todayPlusOneYear))
+           setError("Start date must be less than one year from today.");
     }
 
+    private void checkTripEndDate() {
+        TripCalculator calculator = new TripCalculator(request);
+
+        Date startDate = calculator.getStartDate();
+        Date endDate = calculator.getEndDate();
+        Date startDatePlus30Days = null;
 
 
+        // Set the start date plus 30 start date is valid
+        if (endDate != null) {
+            // Get a calender instance and add a year to it
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(startDate);
+            cal.add(Calendar.DATE, 30);
+            // Get the result from the addition
+            startDatePlus30Days = cal.getTime();
+        }
 
-
-
+        if (endDate == null)
+           setError("End date must be a valid date.");
+        else if (endDate.before(startDate))
+           setError("End date must be on or after start date.");
+        else if (endDate.after(startDatePlus30Days))
+           setError("End date must be less than 30 days after start date.");
+    }
 }
