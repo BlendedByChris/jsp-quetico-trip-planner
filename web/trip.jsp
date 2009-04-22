@@ -21,10 +21,10 @@
     TripValidator validator = new TripValidator(request);
     TripCalculator calculator = new TripCalculator(request);
 
+    errors = validator.getErrors();
+
     if (request.getMethod().equals("POST")) {
-        validator.validate();
-        errors = validator.getErrors();
-        errorIterator = errors.listIterator();
+        validator.validate();    
 
         if (!validator.hasErrors()) {
             calculator.calculate();
@@ -55,10 +55,10 @@
     </head>
     <body>
         <h1>New/Edit Trip</h1>
-        <h2><%=request.getParameter("flash") %></h2>
         <table>
             <% if (validator.hasErrors()) { %>
             <ul id="error-summary">
+                <% errorIterator = errors.listIterator(); %>
                 <% while(errorIterator.hasNext()) { %>
                 <li><%=errorIterator.next() %></li>
                 <% } %>
@@ -155,7 +155,6 @@
                 </tr>
 
             </form>
-        </table
-        <a href="editCanoes.jsp">edit</a>
+        </table>
     </body>
 </html>
