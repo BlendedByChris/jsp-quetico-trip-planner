@@ -18,35 +18,42 @@
 %>
 
 <%
-    TripValidator validator = new TripValidator(request);
-    TripCalculator calculator = new TripCalculator(request);
+    TripValidator validator = new TripValidator(request, session);
 
-    errors = validator.getErrors();
+    if (request.getParameter("flashError") != null)
+        validator.setError(request.getParameter("flashError"));
 
     if (request.getMethod().equals("POST")) {
         validator.validate();    
 
         if (!validator.hasErrors()) {
-            calculator.calculate();
+            validator.calculate();
 
             // Store the session variables
-            session.setAttribute("groupLeader", validator.getParameter("txtGroupLeader"));
-            session.setAttribute("totalGuests", validator.getParameter("txtTotalGuests"));
-            session.setAttribute("adults", validator.getParameter("txtAdults"));
-            session.setAttribute("children", calculator.getTripChildren());
-            session.setAttribute("startDate", calculator.getStartDate());
-            session.setAttribute("endDate", calculator.getEndDate());
-            session.setAttribute("tow", validator.getParameter("chkTow"));
-            session.setAttribute("canoeRental", validator.getParameter("chkCanoeRental"));
-            session.setAttribute("payment", validator.getParameter("radioPayment"));
-            session.setAttribute("tripTotal", calculator.getTripTotal());
-            session.setAttribute("tripDuration", calculator.getTripDuration());
+            session.setAttribute("txtGroupLeader", validator.getParameter("txtGroupLeader"));
+            session.setAttribute("txtTotalGuests", validator.getParameter("txtTotalGuests"));
+            session.setAttribute("txtAdults", validator.getParameter("txtAdults"));
+            session.setAttribute("txtChildren", validator.getTripChildren());
+
+            session.setAttribute("txtStartDateMonth", validator.getParameter("txtStartDateMonth"));
+            session.setAttribute("txtStartDateDay", validator.getParameter("txtStartDateDay"));
+            session.setAttribute("txtStartDateYear", validator.getParameter("txtStartDateYear"));
+
+            session.setAttribute("txtEndDateMonth", validator.getParameter("txtEndDateMonth"));
+            session.setAttribute("txtEndDateDay", validator.getParameter("txtEndDateDay"));
+            session.setAttribute("txtEndDateYear", validator.getParameter("txtEndDateYear"));
+
+            session.setAttribute("startDate", validator.getStartDate());
+            session.setAttribute("endDate", validator.getEndDate());
+            session.setAttribute("chkTow", validator.getParameter("chkTow"));
+            session.setAttribute("chkCanoeRental", validator.getParameter("chkCanoeRental"));
+            session.setAttribute("radioPayment", validator.getParameter("radioPayment"));
+            session.setAttribute("txtTripTotal", validator.getTripTotal());
+            session.setAttribute("txtTripDuration", validator.getTripDuration());
+            session.setAttribute("tripEntered", true);
         }
     }
 %>
-
-
-
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -60,7 +67,6 @@
                         rpChecked = true;
                     }
                 }
-
                 if (rpChecked == false) {
                     alert("You must specify a payment type.");
                     return false;
@@ -74,7 +80,7 @@
         <table>
             <% if (validator.hasErrors()) { %>
             <ul id="error-summary">
-                <% errorIterator = errors.listIterator(); %>
+                <% errorIterator = validator.getErrors().listIterator(); %>
                 <% while(errorIterator.hasNext()) { %>
                 <li><%=errorIterator.next() %></li>
                 <% } %>
@@ -101,7 +107,7 @@
                 <tr>
                     <th><label for="txtChildren">Children:</label></th>
                     <td><input type="text" id="txtChildren" name="txtChildren"
-                               value="<%=calculator.getTripChildren() %>" readonly="readonly" disabled="disabled" /></td>
+                               value="<%=validator.getTripChildren() %>" readonly="readonly" disabled="disabled" /></td>
                 </tr>
                 <tr>
                     <th><label for="txtStartDateMonth">Start Date:</label></th>
@@ -155,19 +161,19 @@
                 <tr>
                     <th><label for="txtTripDuration">Trip Duration:</label></th>
                     <td><input type="text" id="txtTripDuration" name="txtTripDuration" 
-                               value="<%=calculator.getTripDuration() %>" 
+                                   value="<%=validator.getParameter("txtTripDuration") %>"
                                readonly="readonly" disabled="disabled" /></td>
                 </tr>
                 <tr>
                     <th><label for="txtTripTotal">Total Camping Fees:</label></th>
                     <td><input type="text" id="txtTripTotal" name="txtTripTotal"
-                               value="<%=calculator.getTripTotal() %>"
+                               value="<%=validator.getParameter("txtTripDuration") %>"
                                readonly="readonly" disabled="disabled" /></td>
                 </tr>
 
                 <tr>
-                    <td align="right" colspan="2"><input type="submit" 
-                        value="Calculate" />
+                    <td align="right"><a href="index.jsp"><< Back</a></td>
+                    <td><input type="submit" value="Calculate &amp; Save" /></td>
                 </tr>
 
             </form>

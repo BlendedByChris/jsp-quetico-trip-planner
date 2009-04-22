@@ -20,13 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 public class TripCalculator {
     
     private HttpServletRequest request;
-    private long tripDuration = -1; // Hack for null
-    private long tripTotal = -1; // Hack for null
-    private int tripChildren = -1; // Hack for null
 
-    // Per night fees
-    private static long PERNIGHTFEEADULT = 20;
-    private static long PERNIGHTFEECHILDREN = 8;
+
+
 
     // Date parser
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");

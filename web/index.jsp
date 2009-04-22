@@ -22,7 +22,7 @@
             <h2>Select an Action:</h2>
             <ul>
                 <li><a href="trip.jsp">Enter Trip Information</a></li>
-                <li><a href="editCanoes.jsp">Select Canoes</a></li>
+                <li><a href="canoes.jsp">Select Canoes</a></li>
             </ul>
         </div>
     </body>

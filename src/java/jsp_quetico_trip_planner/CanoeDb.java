@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * DB Canoe
@@ -16,7 +18,7 @@ import java.sql.Statement;
 public class CanoeDb {
     private static Connection connection = null;
 
-    private static String url = "jdbc:odbc:timetrex";
+    private static String url = "jdbc:odbc:cdl0105";
     private static String username = "";
     private static String password = "";
 
@@ -25,9 +27,13 @@ public class CanoeDb {
      *
      * Sets the connection for use
      */
-    public CanoeDb() throws SQLException
+    public CanoeDb()
     {
-        connection = getConnection();
+        try {
+            connection = getConnection();
+        } catch (SQLException ex) {
+            Logger.getLogger(CanoeDb.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -59,7 +65,9 @@ public class CanoeDb {
                        "WHERE clCanoe = ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, canoe);
-        return statement.executeQuery();
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+        return rs;
     }
 
     /**

@@ -1,11 +1,16 @@
 package jsp_quetico_trip_planner;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * TripValidator
@@ -14,11 +19,21 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class TripValidator {
 
-    private HttpServletRequest request;
-    private List<String> errors = new ArrayList<String>();
+    public HttpServletRequest request;
+    public HttpSession session;
+    public List<String> errors = new ArrayList<String>();
+
+    // Per durations
+    private long tripDuration = -1; // Hack for null
+    private long tripTotal = -1; // Hack for null
+    private int tripChildren = -1; // Hack for null
+
+    // Per night fees
+    private static long PERNIGHTFEEADULT = 20;
+    private static long PERNIGHTFEECHILDREN = 8;
 
     // Date parser
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    public SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
     /**
      * TripValidator
@@ -27,8 +42,9 @@ public class TripValidator {
      * 
      * @param request
      */
-    public TripValidator(HttpServletRequest request) {
+    public TripValidator(HttpServletRequest request, HttpSession session) {
         this.request = request;
+        this.session = session;
     }
 
     /**
@@ -69,10 +85,12 @@ public class TripValidator {
      * @return parameter
      */
     public String getParameter(String parameter) {
-        if (request.getParameter(parameter) == null)
-            return "";
-        else
+        if (request.getParameter(parameter) != null)
             return request.getParameter(parameter);
+        else if (session.getAttribute(parameter) != null)
+            return (String) session.getAttribute(parameter);
+        else
+            return "";           
     }
 
 
@@ -98,7 +116,6 @@ public class TripValidator {
         // Check for computational errors
         checkTripStartDate();
         checkTripEndDate();
-        //checkPaymentSelected();
     }
 
     private void checkTxtGroupLeader() {
@@ -198,9 +215,9 @@ public class TripValidator {
     }
 
     private void checkTripStartDate() {
-       TripCalculator calculator = new TripCalculator(request);
+       
 
-       Date startDate = calculator.getStartDate();
+       Date startDate = getStartDate();
        Date today = Calendar.getInstance().getTime();
 
         // Get a calender instance to add to
@@ -219,10 +236,9 @@ public class TripValidator {
     }
 
     private void checkTripEndDate() {
-        TripCalculator calculator = new TripCalculator(request);
 
-        Date startDate = calculator.getStartDate();
-        Date endDate = calculator.getEndDate();
+        Date startDate = getStartDate();
+        Date endDate = getEndDate();
         Date startDatePlus30Days = null;
 
 
@@ -242,5 +258,71 @@ public class TripValidator {
            setError("End date must be on or after start date.");
         else if (endDate.after(startDatePlus30Days))
            setError("End date must be less than 30 days after start date.");
+    }
+
+    public void calculate()
+    {
+            // Subtract dates and convert to days (add one for inclusive)
+            tripDuration = ((getEndDate().getTime() - getStartDate().getTime())
+                    / (1000 * 60 * 60 * 24)) + 1;
+
+            // Get guest totals from form
+            int txtAdults = Integer.parseInt(request.getParameter("txtAdults"));
+            int txtTotalGuests = Integer.parseInt(request.getParameter("txtTotalGuests"));
+
+            // Calcuate total children on trip
+            tripChildren = txtTotalGuests - txtAdults;
+
+            // Calculate trip total based on per night fee
+            tripTotal = ((tripDuration-1) * (txtAdults * PERNIGHTFEEADULT)) +
+                        ((tripDuration-1) * (tripChildren * PERNIGHTFEECHILDREN));
+    }
+
+    public String getTripDuration()
+    {
+        if (tripDuration >= 0)
+            return tripDuration + " day(s).";
+        else
+            return "";
+    }
+
+    public String getTripTotal() {
+        if (tripTotal >= 0)
+            return NumberFormat.getCurrencyInstance()
+                        .format(tripTotal);
+        else
+            return "";
+    }
+
+    public String getTripChildren() {
+        if (tripChildren >= 0)
+            return tripChildren + "";
+        else
+            return "";
+
+    }
+
+    public Date getStartDate() {
+        try {
+            return sdf.parse(
+                    request.getParameter("txtStartDateMonth") + "/" +
+                    request.getParameter("txtStartDateDay") + "/" +
+                    request.getParameter("txtStartDateYear"));
+        } catch (ParseException ex) {
+            Logger.getLogger(TripCalculator.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public Date getEndDate() {
+        try {
+            return sdf.parse(
+                    request.getParameter("txtEndDateMonth") + "/" +
+                    request.getParameter("txtEndDateDay") + "/" +
+                    request.getParameter("txtEndDateYear"));
+        } catch (ParseException ex) {
+            Logger.getLogger(TripCalculator.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 }
